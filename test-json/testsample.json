@@ -1,0 +1,515 @@
+[
+    {
+        "start": 0.0,
+        "end": 8.2,
+        "text": "Congratulations, graduates. You now have a degree in psychology, philosophy, sociology,",
+        "classification": {
+            "label": "Finance",
+            "score": 0.005126865115016699
+        }
+    },
+    {
+        "start": 8.2,
+        "end": 15.16,
+        "text": "feminist studies, pre-med, or dozens of other possible subjects. As you step off the podium",
+        "classification": {
+            "label": "Finance",
+            "score": 0.015121187083423138
+        }
+    },
+    {
+        "start": 15.16,
+        "end": 23.55,
+        "text": "with your degree in hand, here's a question for you. Did you learn anything about money?",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9737626910209656
+        }
+    },
+    {
+        "start": 23.55,
+        "end": 29.75,
+        "text": "Did you learn anything about debt, taxes, or why the rich keep getting richer?",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9871197938919067
+        }
+    },
+    {
+        "start": 29.75,
+        "end": 34.89,
+        "text": "As you enter the real world, do you realize your bankers will not ask you for your college",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9533722996711731
+        }
+    },
+    {
+        "start": 34.89,
+        "end": 38.53,
+        "text": "degree or your grade point average? Bankers want to see",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9519202709197998
+        }
+    },
+    {
+        "start": 38.53,
+        "end": 44.41,
+        "text": "your financial statement, not your report card. You know how to read textbooks.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9880000352859497
+        }
+    },
+    {
+        "start": 44.41,
+        "end": 50.53,
+        "text": "You're highly literate people, but are you financially literate? Do you know how",
+        "classification": {
+            "label": "Finance",
+            "score": 0.8445426225662231
+        }
+    },
+    {
+        "start": 50.53,
+        "end": 54.64,
+        "text": "to read a financial statement? I learned more playing Monopoly than I ever",
+        "classification": {
+            "label": "Finance",
+            "score": 0.8930543661117554
+        }
+    },
+    {
+        "start": 54.64,
+        "end": 61.04,
+        "text": "did in school. After all your hours in the classroom, how high is your financial IQ?",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9549901485443115
+        }
+    },
+    {
+        "start": 61.92,
+        "end": 67.76,
+        "text": "I'm guessing that for most of you, the answer is, I don't know. Some of you will reply,",
+        "classification": {
+            "label": "Finance",
+            "score": 0.0847461149096489
+        }
+    },
+    {
+        "start": 67.76,
+        "end": 76.11,
+        "text": "I don't care. On graduation day, all you may care about is making a difference in the world.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.03161642700433731
+        }
+    },
+    {
+        "start": 76.11,
+        "end": 80.35,
+        "text": "But if you don't care about money, money won't care about you.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9320163726806641
+        }
+    },
+    {
+        "start": 80.35,
+        "end": 84.51,
+        "text": "And you'll probably wind up in your parents' basement.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.07082499563694
+        }
+    },
+    {
+        "start": 84.51,
+        "end": 88.69,
+        "text": "In the real world, money is always a problem.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9730371236801147
+        }
+    },
+    {
+        "start": 88.69,
+        "end": 92.65,
+        "text": "If you don't have money, that is a problem.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9793669581413269
+        }
+    },
+    {
+        "start": 92.65,
+        "end": 98.45,
+        "text": "I was born and raised in Hawaii, and I'm best known for Rich Dad, Poor Dad, the most",
+        "classification": {
+            "label": "Finance",
+            "score": 0.686251699924469
+        }
+    },
+    {
+        "start": 98.45,
+        "end": 108.0,
+        "text": "popular book about financial education ever published. My poor dad was my real dad, my biological father, a very smart,",
+        "classification": {
+            "label": "Finance",
+            "score": 0.6724730134010315
+        }
+    },
+    {
+        "start": 108.0,
+        "end": 115.8,
+        "text": "highly educated man, a PhD, and the head of education for the state of Hawaii. But he knew",
+        "classification": {
+            "label": "Finance",
+            "score": 0.027985991910099983
+        }
+    },
+    {
+        "start": 115.8,
+        "end": 122.99,
+        "text": "little, if anything, about money. My rich dad was the father of my best friend. Rich dad never went to high school,",
+        "classification": {
+            "label": "Finance",
+            "score": 0.3369618058204651
+        }
+    },
+    {
+        "start": 123.55,
+        "end": 132.11,
+        "text": "much less college. When he was 13 years old, his father died and he had to take over the family",
+        "classification": {
+            "label": "Finance",
+            "score": 0.11446608603000641
+        }
+    },
+    {
+        "start": 132.11,
+        "end": 138.01,
+        "text": "business. Rich dad got his real-life education in the real world of business.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.783161461353302
+        }
+    },
+    {
+        "start": 138.01,
+        "end": 144.11,
+        "text": "Although he lacked a formal academic education, he understood the world of money and became",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9430184960365295
+        }
+    },
+    {
+        "start": 144.11,
+        "end": 145.11,
+        "text": "a rich man.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.6515538096427917
+        }
+    },
+    {
+        "start": 145.11,
+        "end": 151.11,
+        "text": "Although my poor dad was highly educated, he struggled with money all his life and ultimately",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9763666987419128
+        }
+    },
+    {
+        "start": 151.11,
+        "end": 152.57,
+        "text": "died a poor man.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.09163308888673782
+        }
+    },
+    {
+        "start": 152.57,
+        "end": 158.16,
+        "text": "Like most people, my poor dad thought the way to become financially secure was simply",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9433802366256714
+        }
+    },
+    {
+        "start": 158.16,
+        "end": 159.72,
+        "text": "to earn more money.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9849139451980591
+        }
+    },
+    {
+        "start": 159.72,
+        "end": 163.44,
+        "text": "So he would work harder, get promoted, and get a pay raise.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.5864158868789673
+        }
+    },
+    {
+        "start": 163.44,
+        "end": 167.6,
+        "text": "He got plenty of raises, but he didn't get any richer.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.8469833731651306
+        }
+    },
+    {
+        "start": 167.6,
+        "end": 174.59,
+        "text": "To the graduating class, I passed on my poor dad's big mistake. Although a highly educated man,",
+        "classification": {
+            "label": "Finance",
+            "score": 0.10197146981954575
+        }
+    },
+    {
+        "start": 174.59,
+        "end": 183.07,
+        "text": "a PhD who attended Stanford, University of Chicago, and Northwestern, poor dad was financially",
+        "classification": {
+            "label": "Finance",
+            "score": 0.886480450630188
+        }
+    },
+    {
+        "start": 183.07,
+        "end": 191.83,
+        "text": "illiterate. Poor dad did not know the difference between assets and liabilities. Poor dad always",
+        "classification": {
+            "label": "Finance",
+            "score": 0.919887363910675
+        }
+    },
+    {
+        "start": 191.83,
+        "end": 199.11,
+        "text": "called our family home an asset. He also said our home is our biggest investment. Rich dad",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9459867477416992
+        }
+    },
+    {
+        "start": 199.11,
+        "end": 205.72,
+        "text": "said, your dad may be a PhD, but he does not know his house is not an asset.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.36679795384407043
+        }
+    },
+    {
+        "start": 205.72,
+        "end": 208.64,
+        "text": "His house is a liability.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.47274282574653625
+        }
+    },
+    {
+        "start": 208.64,
+        "end": 212.96,
+        "text": "Assets put money in your pocket, whether you work or not.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9853827357292175
+        }
+    },
+    {
+        "start": 212.96,
+        "end": 217.52,
+        "text": "Liabilities take money from your pocket, whether you work or not.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9930309057235718
+        }
+    },
+    {
+        "start": 217.52,
+        "end": 221.95,
+        "text": "My poor dad kept calling liabilities assets.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9416276812553406
+        }
+    },
+    {
+        "start": 221.95,
+        "end": 223.99,
+        "text": "That's why he was poor.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.5273990631103516
+        }
+    },
+    {
+        "start": 223.99,
+        "end": 226.75,
+        "text": "The rich acquire assets.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9279415011405945
+        }
+    },
+    {
+        "start": 226.75,
+        "end": 230.15,
+        "text": "The poor and middle class acquire liabilities.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9747506976127625
+        }
+    },
+    {
+        "start": 230.15,
+        "end": 232.99,
+        "text": "They think our assets.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9230421185493469
+        }
+    },
+    {
+        "start": 232.99,
+        "end": 238.29,
+        "text": "Come to terms with this concept and you will start your journey towards financial freedom.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9476104974746704
+        }
+    },
+    {
+        "start": 238.29,
+        "end": 244.93,
+        "text": "Reject it and you'll be like my poor dad with that kind of future staring you in the face.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.047978613525629044
+        }
+    },
+    {
+        "start": 244.93,
+        "end": 253.45,
+        "text": "It's no mystery why so many of your contemporaries favor socialism over free market capitalism.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.12984637916088104
+        }
+    },
+    {
+        "start": 253.45,
+        "end": 256.8,
+        "text": "Castle all student debt. Health cares a human right.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9224323034286499
+        }
+    },
+    {
+        "start": 257.36,
+        "end": 263.84,
+        "text": "Tax the rich. These sentiments have a lot of appeal. Why? Because they teach you to blame",
+        "classification": {
+            "label": "Finance",
+            "score": 0.8625255227088928
+        }
+    },
+    {
+        "start": 263.84,
+        "end": 272.39,
+        "text": "others for your money problems. You're a victim of the capitalist system. And there's an easy fix. Just take money from those who",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9801038503646851
+        }
+    },
+    {
+        "start": 272.39,
+        "end": 279.39,
+        "text": "have it and give it to those who don't. That's what my poor dad believed. Here's the irony.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.12731526792049408
+        }
+    },
+    {
+        "start": 279.39,
+        "end": 292.37,
+        "text": "It's not the rich who are obsessed with money. It's the poor and middle class because they never have enough of it. My real education began after I left school.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.6431121230125427
+        }
+    },
+    {
+        "start": 292.37,
+        "end": 299.17,
+        "text": "It's time to begin yours. I leave you with words of wisdom for my rich dad. You never have true",
+        "classification": {
+            "label": "Finance",
+            "score": 0.3789474666118622
+        }
+    },
+    {
+        "start": 299.17,
+        "end": 306.72,
+        "text": "freedom until you have financial freedom. I'm Robert Kiyosaki, author of Rich Dad, Poor Dad,",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9494072794914246
+        }
+    },
+    {
+        "start": 306.72,
+        "end": 309.06,
+        "text": "for Prager University.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.026221539825201035
+        }
+    },
+    {
+        "start": 309.06,
+        "end": 310.9,
+        "text": "Thank you for watching this video.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.02528511919081211
+        }
+    },
+    {
+        "start": 310.9,
+        "end": 313.46,
+        "text": "To keep Prager U videos free,",
+        "classification": {
+            "label": "Finance",
+            "score": 0.03834466636180878
+        }
+    },
+    {
+        "start": 313.46,
+        "end": 317.5,
+        "text": "please consider making a tax deductible donation.",
+        "classification": {
+            "label": "Finance",
+            "score": 0.9128747582435608
+        }
+    }
+]
