@@ -23,18 +23,17 @@ const ProcessRawAudioJson = async (req, res) => {
     //  Get the transcribed result from using SSH to the python server and retrieve RAW TEXT and JSON FILE
 
     // Process Raw Transcribed audio array and json file
-    const TEST_JSON = await ReadFilesAsync(path.join(__dirname, '../../test-json/testsample.json'));
-    const RAW_TEST_TEXT = await ReadFilesAsync(path.join(__dirname, '../../test-json/testsample.txt'));
-    const processedReelsArray = ProcessRawAudioJsonHelper(TEST_JSON, RAW_TEST_TEXT);
+    // get the original fps of the audio.
+    const originalFileName = 'testsample';
+    const filename = 'testsample_extracted_audio';
+    const EXTRACTED_JSON = await ReadFilesAsync(path.join(__dirname, `../../../python_server/intent-identify/${filename}.json`));
+    const RAW_EXTRACTED_TEXT = await ReadFilesAsync(path.join(__dirname, `../../../python_server/raw_transcribed_audio/${filename}.txt`));
+    const SAVE_TO_PYTHON = path.join(__dirname, '../../../python_server/reels_blueprint');
+    const processedReelsArrayFileNames = ProcessRawAudioJsonHelper(EXTRACTED_JSON, RAW_EXTRACTED_TEXT, SAVE_TO_PYTHON, originalFileName);
 
-    // Retrieve the emotion analysis for each reels in the processedAudioFile.
-    const emotionAnalysedReelsArray = await EmotionAnalyserReelsHelper(processedReelsArray);
+    // Ssh the processed-files directory to be uploaded in python server under reels blueprint
 
-    // Save the analysed file locally.
-
-    // Send a request to python and delete the files with a certain filename
-
-    // Send the request to start the ffmpeg action
+    // Send the request to start the video making action process.
 
     // Upload the reels in the mega 2nd account
 

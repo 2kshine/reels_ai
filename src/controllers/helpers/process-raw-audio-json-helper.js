@@ -1,14 +1,19 @@
 const uuid = require('uuid');
 const TRUTHY_SCORE_VALUE = 0.9;
+const path = require('path');
+const fs = require('fs');
+const HuggingFaceServices = require('../../services/huggingface-services');
 
-const ProcessRawAudioJsonHelper = (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_ARRAY) => {
+const ProcessRawAudioJsonHelper = async (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_ARRAY, SAVE_TO_PYTHON, FILE_NAME) => {
   let VARIABLE_RAW_TRANSCRIBED_ARRAY = [...RAW_TRANSCRIBED_ARRAY];
   let VARIABLE_JSON_TRANSCRIBED_DATA = [...JSON_TRANSCRIBED_DATA];
   const REELS_SCRIPT_ARRAY = [];
   const END_OF_TIME = [];
 
+  // const CONVERSION_RATIO = ORIGINAL_FPS_RATE_FOR_AUDIO_TRANSCRIBE / parseInt(process.env.DEFAULT_FPS_RATE_FOR_AUDIO_TRANSCRIBE);
   // Map the JSON_TRANSCRIBED_DATA with classification score of greater than 0.9
   let temp_segment_array = [];
+
   JSON_TRANSCRIBED_DATA.map((segment) => {
     const segmentTextTrimmed = segment.text.trim();
     if (segment.classification.score < TRUTHY_SCORE_VALUE) {
@@ -107,7 +112,6 @@ const ProcessRawAudioJsonHelper = (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_ARRAY)
       // End of the phase
 
       // ##################PHASE 2 ENDS ###############
-
       // Get the average total time taken and all the other besides classification
       const startTime = segmentObjectArray[0].start;
       const endTime = segmentObjectArray[segmentObjectArray.length - 1].end;
@@ -123,9 +127,21 @@ const ProcessRawAudioJsonHelper = (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_ARRAY)
         totalScore = totalScore + segment.classification.score;
         return null;
       });
+      const offset = startTime - 0.00;
       segmentObjectArray = [[...segmentObjectArray.map((seg) => {
-        const { start, end, text } = seg;
-        return ({ start, end, text });
+        const { start, end, text, classification } = seg;
+        // Apply filters now and ignore the first two in the process part
+        const objectToReturn = { text };
+        objectToReturn.start = start - offset;
+        objectToReturn.end = end - offset;
+        if (classification.score >= 0.85 && classification.score < 0.95) {
+          objectToReturn.action = 'NORMAL';
+        } else if (classification.score >= 0.95) {
+          objectToReturn.action = 'ZOOM';
+        } else {
+          objectToReturn.action = 'IMAGE';
+        }
+        return (objectToReturn);
       })], { id: uuid.v4(), results: { totalTimeTaken, totalWords, totalScore, avg: totalScore / totalWords, period: { startTime, endTime } } }];
       REELS_SCRIPT_ARRAY.push(segmentObjectArray);
       // ##################PHASE 3 ENDS ###############
@@ -133,6 +149,7 @@ const ProcessRawAudioJsonHelper = (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_ARRAY)
     return null;
   });
 
+  // when reels coincide with same end time, prioritize the reels with the highest average score.and discard the other
   const REDUCED_REELS_SCRIPT_ARRAY = [];
   END_OF_TIME.map((endTime) => {
     const filteredReelsScriptArray = REELS_SCRIPT_ARRAY.filter((reelResult) => {
@@ -144,9 +161,37 @@ const ProcessRawAudioJsonHelper = (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_ARRAY)
     REDUCED_REELS_SCRIPT_ARRAY.push(highestAvg);
     return null;
   });
-  return REDUCED_REELS_SCRIPT_ARRAY;
-  // Get the average score of the text by adding the scores and diving it by the number of words.
-  // Push the whole segment along with the average score, total time, and all the other besides classification
+
+  const arrayOfFileNames = [];
+  // Do the emotion analysis for the reduced reels and then save it in the processed-files directory.
+  try {
+    for (const allocatedContent of REDUCED_REELS_SCRIPT_ARRAY) { // 3 arrays nested.
+      let resultsToWrite = [];
+      for (const subChildAllocated of allocatedContent[0]) {
+        const { start, end, action, text } = subChildAllocated;
+        let emotion = null;
+        if (action === 'IMAGE') {
+          emotion = await HuggingFaceServices.runEmotionAnalysisQuery({ segment: text });
+        }
+        resultsToWrite.push({ start, end, action, text, emotion: emotion?.emotions?.label, sentiment: emotion?.sentiments?.label });
+      }
+      resultsToWrite = [[...resultsToWrite], allocatedContent[1]];
+      // Define the output file path
+      const fileName = `${FILE_NAME}_${allocatedContent[1].id}.json`;
+      const filePath = path.join(SAVE_TO_PYTHON, fileName);
+
+      // Keep records of the filenames;
+      arrayOfFileNames.push(fileName);
+
+      // Write the highestAvg object to a JSON file
+      fs.writeFileSync(filePath, JSON.stringify(resultsToWrite, null, 2), 'utf8');
+      console.log(`Stored the file in ${filePath}`);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  return arrayOfFileNames;
 };
 
 module.exports = { ProcessRawAudioJsonHelper };

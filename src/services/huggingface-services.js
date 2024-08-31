@@ -21,7 +21,7 @@ const HuggingFaceAxiosRequest = async (endpoint, actionType, data) => {
     return err;
   }
 };
-const runEmotionAnalysisQuery = async (segment, reelsId) => {
+const runEmotionAnalysisQuery = async (segment) => {
   return await HuggingFaceAxiosRequest('/emotion-analysis', 'POST', segment);
 };
 
