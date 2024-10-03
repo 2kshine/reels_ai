@@ -7,7 +7,7 @@ const { sequelize } = require('./models/index.js');
 const routes = require('./src/routes/index.js');
 const testController = require('./src/controllers/action-controller.js');
 // const { sixDigitCodeRedis } = require('./src/services/redis-connect.js');
-
+const { UploadReelsVideos } = require('./src/controllers/upload-videos.js');
 // Cors Middleware
 const corsOptions = {
   origin: process.env.UX_URL,
@@ -17,9 +17,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser(process.env.COOKIE_TOP_SECRET));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 
-app.use('/api', routes);
+app.use(routes);
 
 const PORT = process.env.PORT;
 const API_URL = process.env.APP_URL;
@@ -41,7 +41,8 @@ app.listen(PORT, async () => {
   // const something = another.splice(1, another.length);
   // console.log(something);
   // return;
+  UploadReelsVideos();
   console.log(`Listening at PORT ${PORT}`);
   console.log('##############################$$$$$################');
-  testController.ProcessRawAudioJson();
+  // testController.ProcessRawAudioJson();
 });

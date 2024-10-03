@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon -L ./server.js",
+    "start": "concurrently \"npm run server\" \" npm run expose\"",
+    "server": "nodemon -L ./server.js",
+    "expose": "ngrok http --url=more-lynx-cheaply.ngrok-free.app 8080",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -21,16 +23,21 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "google-auth-library": "^9.14.1",
+    "googleapis": "^144.0.0",
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.5.0",
     "mysql2": "^3.11.0",
     "node-mailjet": "^6.0.5",
+    "qrcode": "^1.5.4",
     "redis": "^4.7.0",
     "sequelize": "^6.37.3",
     "sequelize-cli": "^6.6.2",
+    "speakeasy": "^2.0.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "concurrently": "^9.0.1",
     "eslint": "^8.57.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",

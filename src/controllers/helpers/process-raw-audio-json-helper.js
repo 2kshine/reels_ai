@@ -7,10 +7,11 @@ const HuggingFaceServices = require('../../services/huggingface-services');
 const ProcessRawAudioJsonHelper = async (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_ARRAY, SAVE_TO_PYTHON, FILE_NAME) => {
   let VARIABLE_RAW_TRANSCRIBED_ARRAY = [...RAW_TRANSCRIBED_ARRAY];
   let VARIABLE_JSON_TRANSCRIBED_DATA = [...JSON_TRANSCRIBED_DATA];
+
   const REELS_SCRIPT_ARRAY = [];
   const END_OF_TIME = [];
+  const MINIMUM_CLIP_DURATION = 3;
 
-  // const CONVERSION_RATIO = ORIGINAL_FPS_RATE_FOR_AUDIO_TRANSCRIBE / parseInt(process.env.DEFAULT_FPS_RATE_FOR_AUDIO_TRANSCRIBE);
   // Map the JSON_TRANSCRIBED_DATA with classification score of greater than 0.9
   let temp_segment_array = [];
 
@@ -39,7 +40,7 @@ const ProcessRawAudioJsonHelper = async (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_
     }
 
     // Define an empty objects array to encoperate all things truthy.
-    let segmentObjectArray = [];
+    const segmentObjectArray = [];
 
     // Check if the truthy is a segment or a full sentence.
 
@@ -63,6 +64,7 @@ const ProcessRawAudioJsonHelper = async (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_
     }
     // console.log('VARIABLE_RAW_TRANSCRIBED_ARRAY', VARIABLE_RAW_TRANSCRIBED_ARRAY);
     // ##################PHASE 1 ENDS ###############
+
     if (segmentObjectArray.length) {
       // Encoperate the text until 30 seconds passes and is the end of the sentence or end of the text is reached, Max video lenth is near 2 minutes
       let variableStartDate = segment.start + 75; // 15 seconds period after a minute
@@ -115,7 +117,22 @@ const ProcessRawAudioJsonHelper = async (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_
       // Get the average total time taken and all the other besides classification
       const startTime = segmentObjectArray[0].start;
       const endTime = segmentObjectArray[segmentObjectArray.length - 1].end;
-      const totalTimeTaken = endTime - startTime;
+      const totalTimeTaken = parseInt(endTime - startTime);
+      let image_cap = 0;
+      let image_counter = 0;
+      switch (totalTimeTaken) {
+        case totalTimeTaken >= 75:
+          image_cap = 4;
+          break;
+        case totalTimeTaken >= 90:
+          image_cap = 5;
+          break;
+        case totalTimeTaken >= 105:
+          image_cap = 5;
+          break;
+        default:
+          image_cap = 4;
+      }
       let totalWords = 0;
       let totalScore = 0;
 
@@ -128,34 +145,109 @@ const ProcessRawAudioJsonHelper = async (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_
         return null;
       });
       const offset = startTime - 0.00;
-      segmentObjectArray = [[...segmentObjectArray.map((seg) => {
-        const { start, end, text, classification } = seg;
-        // Apply filters now and ignore the first two in the process part
-        const objectToReturn = { text };
+
+      let temporarySegmentToMerge = {};
+      const filterDuplicates = [];
+      let previousActionRecord = null;
+      const segmentObjectArrayLatest = segmentObjectArray.map((seg, index) => {
+        let { start, end, text, classification } = seg;
+
+        // Skip duplicates
+        if (filterDuplicates.includes(text)) {
+          return false;
+        }
+
+        filterDuplicates.push(text);
+
+        // Create the object to return
+        let objectToReturn = { text };
         objectToReturn.start = start - offset;
         objectToReturn.end = end - offset;
-        if (classification.score >= 0.85 && classification.score < 0.95) {
+        const currentClipDuration = parseInt(end - start);
+
+        if (currentClipDuration < MINIMUM_CLIP_DURATION) {
+          if (Object.keys(temporarySegmentToMerge).length) {
+            objectToReturn = {
+              text: temporarySegmentToMerge.text + text,
+              start: temporarySegmentToMerge.start,
+              end: end - offset
+            };
+            classification = temporarySegmentToMerge.classification.score > classification.score
+              ? temporarySegmentToMerge.classification
+              : classification;
+          } else {
+            temporarySegmentToMerge = { classification, ...objectToReturn };
+            return false; // Skip this segment
+          }
+        }
+
+        const isNextSegmentShort = (index + 1 < segmentObjectArray.length)
+          ? parseInt(segmentObjectArray[index + 1].end - offset - (segmentObjectArray[index + 1].start - offset))
+          : 10;
+
+        if (isNextSegmentShort < MINIMUM_CLIP_DURATION) {
+          temporarySegmentToMerge = { classification, ...objectToReturn };
+          return false; // Skip this segment
+        } else {
+          if (Object.keys(temporarySegmentToMerge).length) {
+            objectToReturn = {
+              text: temporarySegmentToMerge.text + text,
+              start: temporarySegmentToMerge.start,
+              end: end - offset
+            };
+            classification = temporarySegmentToMerge.classification.score > classification.score
+              ? temporarySegmentToMerge.classification
+              : classification;
+          }
+          temporarySegmentToMerge = {};
+        }
+        // To avoid having two action besides NORMAL in a row
+        const calculateClipDurationLatest = ((end - offset) - objectToReturn.start);
+        // Determine action based on classification score and previous segment
+        if (calculateClipDurationLatest >= 5 && image_counter < image_cap && previousActionRecord !== 'IMAGE') {
+          objectToReturn.action = 'IMAGE';
+          image_counter++;
+        } else if (classification.score >= 0.85 && classification.score < 0.95) {
           objectToReturn.action = 'NORMAL';
-        } else if (classification.score >= 0.95) {
+        } else if (classification.score >= 0.95 && index > 0 && segmentObjectArray[index - 1].text.includes('.') && previousActionRecord !== 'ZOOM') {
           objectToReturn.action = 'ZOOM';
         } else {
-          objectToReturn.action = 'IMAGE';
+          objectToReturn.action = 'NORMAL';
         }
-        return (objectToReturn);
-      })], { id: uuid.v4(), results: { totalTimeTaken, totalWords, totalScore, avg: totalScore / totalWords, period: { startTime, endTime } } }];
-      REELS_SCRIPT_ARRAY.push(segmentObjectArray);
+
+        // If any of the duration is greater than (2(for transition) + 2(for transition) + 2 x minimum clip duration > 10 split it)
+        if (currentClipDuration > 9) {
+          currentClipDuration;
+        } else {
+          previousActionRecord = objectToReturn.action;
+        }
+        return objectToReturn;
+      }).filter(Boolean);
+
+      REELS_SCRIPT_ARRAY.push({
+        id: uuid.v4(),
+        results: {
+          totalTimeTaken,
+          totalWords,
+          totalScore,
+          avg: totalScore / totalWords,
+          period: { startTime, endTime }
+        },
+        payload: segmentObjectArrayLatest
+      });
+      console.log(REELS_SCRIPT_ARRAY);
       // ##################PHASE 3 ENDS ###############
     }
     return null;
   });
-
   // when reels coincide with same end time, prioritize the reels with the highest average score.and discard the other
   const REDUCED_REELS_SCRIPT_ARRAY = [];
   END_OF_TIME.map((endTime) => {
     const filteredReelsScriptArray = REELS_SCRIPT_ARRAY.filter((reelResult) => {
-      return reelResult[1].results.period.endTime === endTime;
+      return reelResult.results.period.endTime === endTime;
     });
-    const highestAvg = [filteredReelsScriptArray[1]].reduce((max, current) => {
+    console.log('filteredReelsScriptArray.payload.', filteredReelsScriptArray);
+    const highestAvg = filteredReelsScriptArray.reduce((max, current) => {
       return current.results.avg > max.results.avg ? current : max;
     });
     REDUCED_REELS_SCRIPT_ARRAY.push(highestAvg);
@@ -166,8 +258,9 @@ const ProcessRawAudioJsonHelper = async (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_
   // Do the emotion analysis for the reduced reels and then save it in the processed-files directory.
   try {
     for (const allocatedContent of REDUCED_REELS_SCRIPT_ARRAY) { // 3 arrays nested.
-      let resultsToWrite = [];
-      for (const subChildAllocated of allocatedContent[0]) {
+      const resultsToWrite = [];
+      const { id, results, payload } = allocatedContent;
+      for (const subChildAllocated of payload) {
         const { start, end, action, text } = subChildAllocated;
         let emotion = null;
         if (action === 'IMAGE') {
@@ -175,16 +268,16 @@ const ProcessRawAudioJsonHelper = async (JSON_TRANSCRIBED_DATA, RAW_TRANSCRIBED_
         }
         resultsToWrite.push({ start, end, action, text, emotion: emotion?.emotions?.label, sentiment: emotion?.sentiments?.label });
       }
-      resultsToWrite = [[...resultsToWrite], allocatedContent[1]];
+      const payloadForWriteFileSync = { id, results, payload: resultsToWrite };
       // Define the output file path
-      const fileName = `${FILE_NAME}_${allocatedContent[1].id}.json`;
+      const fileName = `${FILE_NAME}_${id}.json`;
       const filePath = path.join(SAVE_TO_PYTHON, fileName);
 
       // Keep records of the filenames;
       arrayOfFileNames.push(fileName);
 
       // Write the highestAvg object to a JSON file
-      fs.writeFileSync(filePath, JSON.stringify(resultsToWrite, null, 2), 'utf8');
+      fs.writeFileSync(filePath, JSON.stringify(payloadForWriteFileSync, null, 2), 'utf8');
       console.log(`Stored the file in ${filePath}`);
     }
   } catch (err) {

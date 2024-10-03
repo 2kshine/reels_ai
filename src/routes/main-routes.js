@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 
 // Process raw audio json file
-router.post('/generate-reels', ActionController.ProcessRawAudioJson)
-
+router.post('/generate-reels', ActionController.ProcessRawAudioJson);
 
 module.exports = router;

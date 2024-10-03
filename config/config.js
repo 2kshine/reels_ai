@@ -1,27 +1,30 @@
+require('dotenv').config(); // Make sure to load your .env variables
 
-module.exports = {
+const config = {
   development: {
     username: process.env.DB_USER,
-    password: process.env.MYSQL_ROOT_PASSWORD,
-    database: process.env.DB_DATABASE,
-    host: 'host.docker.internal',
-    dialect: 'mysql',
-    port: process.env.DB_PORT
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    dialect: 'mysql'
   },
   test: {
     username: process.env.DB_USER,
-    password: process.env.MYSQL_ROOT_PASSWORD,
-    database: process.env.DB_DATABASE,
-    host: 'host.docker.internal',
-    dialect: 'mysql',
-    port: process.env.DB_PORT
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+    host: process.env.DB_HOST,
+    dialect: 'mysql'
   },
   production: {
     username: process.env.DB_USER,
-    password: process.env.MYSQL_ROOT_PASSWORD,
-    database: process.env.DB_DATABASE,
-    host: 'host.docker.internal',
-    dialect: 'mysql',
-    port: process.env.DB_PORT
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+    host: process.env.DB_HOST,
+    dialect: 'mysql'
   }
 };
+
+module.exports = config;
