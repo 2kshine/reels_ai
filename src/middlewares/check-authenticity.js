@@ -28,7 +28,7 @@ const CheckAuthenticity = async (req, res, next) => {
       // Reset the user activity
       res.cookie('user_activity', JSON.stringify({ user_agent, user_ip }), {
         path: '/',
-        maxAge: 10 * 60 * 1000, // 10 minutes of activity
+        maxAge: 60 * 60 * 1000, // 10 minutes of activity
         signed: true
       });
     } else {

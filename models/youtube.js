@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
     refresh_token: {
       type: DataTypes.STRING
     },
-    picture: {
+    channel_id: {
       type: DataTypes.STRING
     }
   }, {

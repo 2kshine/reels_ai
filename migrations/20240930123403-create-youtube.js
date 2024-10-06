@@ -18,7 +18,7 @@ module.exports = {
       refresh_token: {
         type: Sequelize.STRING
       },
-      picture: {
+      channel_id: {
         type: Sequelize.STRING
       },
       createdAt: {

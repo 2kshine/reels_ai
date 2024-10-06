@@ -1,4 +1,5 @@
 const { UploadYoutube } = require('../services/youtube-services');
+const { UploadFacebook } = require('../services/facebook-services');
 const logger = require('../../config/cloudwatch-logs');
 const database = require('../services/database-services');
 const fs = require('fs');
@@ -22,25 +23,32 @@ const UploadReelsVideos = async (req, res) => {
     // Get the respective objects
     const channelObject = await database.getChannelInfo({ id: videoMetaData?.channel_id });
     if (!channel) {
-      logger.log('upload-videos@getRandomFileFromDirectory', 'Failed to get the channel object', null, 'info', { videoMetaData });
-      console.log('upload-videos@getRandomFileFromDirectory', 'Failed to get the channel object', null, 'info', { videoMetaData });
+      logger.log('upload-videos@UploadReelsVideos', 'Failed to get the channel object', null, 'info', { videoMetaData });
+      console.log('upload-videos@UploadReelsVideos', 'Failed to get the channel object', null, 'info', { videoMetaData });
       return false;
     }
     const youtubeRecord = await database.getYoutubeInfo({ id: channelObject?.youtube_uid });
     if (!youtubeRecord) {
-      logger.log('upload-videos@getRandomFileFromDirectory', 'Failed to get the youtube object', null, 'info', { videoMetaData });
-      console.log('upload-videos@getRandomFileFromDirectory', 'Failed to get the youtube object', null, 'info', { videoMetaData });
+      logger.log('upload-videos@UploadReelsVideos', 'Failed to get the youtube object', null, 'info', { videoMetaData });
+      console.log('upload-videos@UploadReelsVideos', 'Failed to get the youtube object', null, 'info', { videoMetaData });
       return false;
     }
-    logger.log('upload-videos@getRandomFileFromDirectory', 'Upload process begins', null, 'info', { videoMetaData });
-    console.log('upload-videos@getRandomFileFromDirectory', 'Upload process begins', null, 'info', { videoMetaData });
-    await Promise.all([UploadYoutube(videoMetaData, videoFileToUploadFilePath, youtubeRecord, videoFilename, 'SHORTS')]);
+    const facebookRecord = await database.getFacebookInfo({ id: channelObject?.facebook_uid });
+    if (!facebookRecord) {
+      logger.log('upload-videos@UploadReelsVideos', 'Failed to get the facebook object', null, 'info', { videoMetaData });
+      console.log('upload-videos@UploadReelsVideos', 'Failed to get the facebook object', null, 'info', { videoMetaData });
+      return false;
+    }
+    logger.log('upload-videos@UploadReelsVideos', 'Upload process begins', null, 'info', { videoMetaData });
+    console.log('upload-videos@UploadReelsVideos', 'Upload process begins', null, 'info', { videoMetaData });
+    // await Promise.all([UploadYoutube(videoMetaData, videoFileToUploadFilePath, youtubeRecord, 'SHORTS')]);
+    await Promise.all([UploadFacebook(videoMetaData, videoFileToUploadFilePath, facebookRecord, 'REELS')]);
 
     // Move file from videos_to_upload to finished_upload
     // api call to python to remove all the associated files through filename
   } catch (err) {
-    logger.log('upload-videos@getRandomFileFromDirectory', 'Failed to upload', null, 'info', { err });
-    console.log('upload-videos@getRandomFileFromDirectory', 'Failed to upload', null, 'info', { err });
+    logger.log('upload-videos@UploadReelsVideos', 'Failed to upload', null, 'info', { err });
+    console.log('upload-videos@UploadReelsVideos', 'Failed to upload', null, 'info', { err });
   }
 };
 
