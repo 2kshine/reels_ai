@@ -4,7 +4,7 @@ const axios = require('axios');
 const { oauth2Client } = require('../services/youtube-services');
 const logger = require('../../config/cloudwatch-logs');
 
-const { YT_SCOPES, SECRET_STATE, FB_APP_ID, FB_REDIRECT_URL, API_URL, FB_APP_SECRET, FB_APP_PAGE_SCOPED_USERID, FB_ACCESS_TOKEN, FB_APP_SCOPED_USERID, FB_SCOPES } = process.env;
+const { YT_SCOPES, SECRET_STATE, FB_APP_ID, FB_REDIRECT_URL, API_URL, FB_APP_SECRET, FB_ACCESS_TOKEN, FB_SCOPES, TT_CLIENT_KEY, TT_CLIENT_SECRET, TT_SCOPES, TT_REDIRECT_URL } = process.env;
 const EMAIL_NICHE_ARRAY = [{ niche: 'Finance', email: 'financefantasylab@gmail.com' }];
 const registeredRedirectURL = `${API_URL}${FB_REDIRECT_URL}`;
 
@@ -130,7 +130,7 @@ const authoriseYoutube = async (req, res) => {
 // Facebook Auth
 const generateFacebookAuthUrl = async (req, res) => {
   try {
-    const redirectUrl = `https://www.facebook.com/v21.0/dialog/oauth?client_id=${FB_APP_ID}&redirect_uri=${registeredRedirectURL}&state=${SECRET_STATE}&auth_type=rerequest&scope=${FB_SCOPES}`;
+    const redirectUrl = `https://www.facebook.com/v21.0/dialog/oauth?client_id=${FB_APP_ID}&redirect_uri=${registeredRedirectURL}&state=${SECRET_STATE}&scope=${FB_SCOPES}`;
     logger.log('auth-controller@generateFacebookAuthUrl', 'Redirecting the user to the YouTube authorization URL', null, 'info', { redirectUrl });
     console.log('auth-controller@generateFacebookAuthUrl', 'Redirecting the user to the YouTube authorization URL', null, 'info', { redirectUrl });
 
@@ -202,7 +202,7 @@ const generateFacebookPageAuthUrl = async (req, res) => {
     });
 
     const { name, id, emails, access_token } = pageInfo.data;
-    if (!Object.keys(pageInfo.data).length) {
+    if (!pageInfo?.data && !Object.keys(pageInfo.data).length) {
       logger.log('auth-controller@generateFacebookPageAuthUrl', 'User info retrieved', null, 'info', { name, id, emails });
       console.log('auth-controller@generateFacebookPageAuthUrl', 'User info retrieved', null, 'info', { name, id, emails });
       return res.status(403).json({ message: 'Failed to get facebook page info check app page id and try again!!!' });
@@ -258,6 +258,7 @@ const generateFacebookPageAuthUrl = async (req, res) => {
       console.log('auth-controller@generateFacebookPageAuthUrl', `Channel account detected for ${emails}.`);
       // Updating the channel with facebook url
       await database.updateChannelInfo(channelUser, {
+        name,
         facebook_uid: facebookUser.id
       });
     }
@@ -281,10 +282,150 @@ const generateFacebookPageAuthUrl = async (req, res) => {
   }
 };
 
+// Tiktok Auth
+const generateTiktokAuthUrl = async (req, res) => {
+  try {
+    // Define Scopes.
+    const redirectURI = `${API_URL}${TT_REDIRECT_URL}`;
+    const encodedParams = `client_key=${encodeURIComponent(TT_CLIENT_KEY)}&response_type=code&scope=${encodeURIComponent(TT_SCOPES)}&redirect_uri=${encodeURIComponent(redirectURI)}&state=${encodeURIComponent(SECRET_STATE)}`;
+    const buildAuthoriseUrl = `https://www.tiktok.com/v2/auth/authorize?${encodedParams}`;
+
+    logger.log('auth-controller@generateTiktokAuthUrl', 'Redirecting the user to the Tiktok authorization URL', null, 'info', { buildAuthoriseUrl });
+    console.log('auth-controller@generateTiktokAuthUrl', 'Redirecting the user to the Tiktok authorization URL', null, 'info', { buildAuthoriseUrl });
+
+    return res.status(302).redirect(buildAuthoriseUrl);
+  } catch (err) {
+    logger.log('auth-controller@generateTiktokAuthUrl', 'Error generating YouTube auth URL', null, 'error', { error: err });
+    console.error('auth-controller@generateTiktokAuthUrl', 'Error generating YouTube auth URL', null, 'error', { error: err });
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+const authoriseTiktok = async (req, res) => {
+  const { code, state } = req.query;
+  try {
+    if (state !== SECRET_STATE) {
+      logger.log('auth-controller@authoriseTiktok', 'State mismatch. Possible CSRF attack detected', null, 'error', {});
+      console.log('auth-controller@authoriseTiktok', 'State mismatch. Possible CSRF attack detected', null, 'error', {});
+      return res.status(403).json({ message: 'Forbidden!!!' });
+    }
+
+    // Encode uri params
+    const redirectURI = `${API_URL}${TT_REDIRECT_URL}`;
+    const encodedParams = new URLSearchParams({
+      client_key: TT_CLIENT_KEY,
+      client_secret: TT_CLIENT_SECRET,
+      code,
+      grant_type: 'authorization_code',
+      redirect_uri: redirectURI
+    }).toString();
+
+    const tiktokInfo = await axios.post('https://open.tiktokapis.com/v2/oauth/token/', encodedParams, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+    console.log(tiktokInfo);
+    if (!tiktokInfo?.data && !Object.keys(tiktokInfo.data)?.length) {
+      logger.log('auth-controller@authoriseTiktok', 'Failed to get Tiktok!!!', null, 'error', { });
+      console.log('auth-controller@authoriseTiktok', 'Failed to get Tiktok!!!', null, 'error', { });
+      return res.status(403).json({ message: 'Failed to get Tiktok!!!' });
+    }
+    const { open_id, access_token, refresh_token } = tiktokInfo.data;
+
+    const userProfileInfo = await axios.get('https://open.tiktokapis.com/v2/user/info/?fields=display_name,username', {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`
+      }
+    });
+    console.log('userProfileInfo?.data', userProfileInfo?.data);
+    if (!userProfileInfo?.data?.data?.user && !Object.keys(userProfileInfo?.data?.data?.user)?.length) {
+      logger.log('auth-controller@authoriseTiktok', 'Failed to get Tiktok user info!!!', null, 'error', { });
+      console.log('auth-controller@authoriseTiktok', 'Failed to get Tiktok user info!!!', null, 'error', { });
+      return res.status(403).json({ message: 'Failed to get Tiktok!!!' });
+    }
+    const { display_name, username } = userProfileInfo?.data?.data?.user;
+    const email = `${username}@gmail.com`;
+
+    const niche = EMAIL_NICHE_ARRAY.find(item => item.email === email)?.niche;
+    if (!niche) {
+      logger.log('auth-controller@authoriseTiktok', 'No matching niche found for email', null, 'warn', { display_name, username });
+      console.warn('auth-controller@authoriseTiktok', 'No matching niche found for email:', display_name, username);
+      return res.status(400).json({ message: 'Niche not found' });
+    }
+
+    // Check for existing YouTube user and channel
+    logger.log('auth-controller@authoriseTiktok', 'Checking for existing Tiktok user and channel', null, 'info', { display_name, username, email });
+    console.log('auth-controller@authoriseTiktok', 'Checking for existing Tiktok user and channel', null, 'info', { display_name, username, email });
+    let [channelUser, tiktokUser] = await Promise.all([
+      database.getChannelInfo({ email }),
+      database.getTiktokInfo({ email })
+    ]);
+
+    if (!tiktokUser) {
+      logger.log('auth-controller@authoriseTiktok', `Creating Tiktok User... ${email}`, null, 'info', { display_name, username, email });
+      console.log('auth-controller@authoriseTiktok', `Creating Tiktok User... ${email}`);
+      tiktokUser = await database.createTiktokInfo({
+        open_id,
+        refresh_token,
+        name: display_name,
+        email
+      });
+    } else {
+      logger.log('auth-controller@authoriseTiktok', `Tiktok account detected for ${email}. Aborting.`, null, 'warn', { display_name, username, email });
+      console.log('auth-controller@authoriseTiktok', `Tiktok account detected for ${email}. Aborting.`);
+      await database.updateFacebookInfo(tiktokUser, {
+        open_id,
+        refresh_token,
+        name: display_name,
+        email
+      });
+    }
+
+    if (!channelUser) {
+      logger.log('auth-controller@authoriseTiktok', 'Creating Channel User... ', null, 'info', { display_name, username, email });
+      console.log('auth-controller@authoriseTiktok', 'Creating Channel User... ', null, 'info', { display_name, username, email });
+      await database.createChannelInfo({
+        name: display_name,
+        niche,
+        email,
+        youtube_uid: tiktokUser.id
+      });
+    } else {
+      logger.log('auth-controller@authoriseTiktok', 'Channel account detected ', null, 'warn', { display_name, username, email });
+      console.log('auth-controller@authoriseTiktok', 'Channel account detected ', null, 'warn', { display_name, username, email });
+      // Updating the channel with facebook url
+      await database.updateChannelInfo(channelUser, {
+        name: display_name,
+        tiktok_uid: tiktokUser.id
+      });
+    }
+
+    res.status(201).send(`
+      <html>
+        <head>
+          <title>Authorization Successful</title>
+        </head>
+        <body>
+          <h1>Authorized!</h1>
+          <p>You can close the browser now!</p>
+        </body>
+      </html>
+    `);
+  } catch (err) {
+    logger.log('auth-controller@authoriseTiktok', 'Error during Tiktok authorization', null, 'error', { error: err });
+    console.error('auth-controller@authoriseTiktok', 'Error during Tiktok authorization', null, 'error', { error: err });
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
 module.exports = {
   generateYoutubeAuthUrl,
   authoriseYoutube,
   generateFacebookAuthUrl,
   authoriseFacebook,
-  generateFacebookPageAuthUrl
+  generateFacebookPageAuthUrl,
+  generateTiktokAuthUrl,
+  authoriseTiktok
 };

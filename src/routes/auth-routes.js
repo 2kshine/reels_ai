@@ -11,5 +11,8 @@ router.get('/facebook', CheckAuthenticity, AuthController.generateFacebookAuthUr
 router.get('/facebook/callback', CheckAuthenticity, AuthController.authoriseFacebook);
 router.get('/facebook-page', CheckAuthenticity, AuthController.generateFacebookPageAuthUrl);
 
+router.get('/tiktok', CheckAuthenticity, AuthController.generateTiktokAuthUrl);
+router.get('/tiktok/callback', CheckAuthenticity, AuthController.authoriseTiktok);
+
 router.get('/qrsetup', QrController.QrSetup);
 module.exports = router;

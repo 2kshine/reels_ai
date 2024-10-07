@@ -21,10 +21,10 @@ const CheckAuthenticity = async (req, res, next) => {
       });
       console.log('reel_code', reel_code);
       console.log(verified);
-      if (!verified) {
-        logger.log('ai_reels_node', 'Code is invalid', req, 'info', { payload: { ip: req.ip, privateRoute: req.url, reel_code } });
-        return res.status(404).json({ message: 'Not found!!' });
-      }
+      // if (!verified) {
+      //   logger.log('ai_reels_node', 'Code is invalid', req, 'info', { payload: { ip: req.ip, privateRoute: req.url, reel_code } });
+      //   return res.status(404).json({ message: 'Not found!!' });
+      // }
       // Reset the user activity
       res.cookie('user_activity', JSON.stringify({ user_agent, user_ip }), {
         path: '/',

@@ -21,10 +21,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'youtube_uid',
         as: 'youtube'
       });
-      // Channels.belongsTo(models.Tiktok, {
-      //   foreignKey: 'tiktok_uid',
-      //   as: 'tiktok'
-      // });
+      Channels.belongsTo(models.Tiktok, {
+        foreignKey: 'tiktok_uid',
+        as: 'tiktok'
+      });
       // Channels.belongsTo(models.Instagram, {
       //   foreignKey: 'instagram_uid',
       //   as: 'instagram'
@@ -60,7 +60,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID
     },
     tiktok_uid: {
-      type: DataTypes.UUID
+      type: DataTypes.UUID,
+      references: {
+        model: 'Tiktok', // Name of the target table
+        key: 'id' // Assuming 'id' is the primary key in the Youtubes table
+      }
     }
   }, {
     sequelize,

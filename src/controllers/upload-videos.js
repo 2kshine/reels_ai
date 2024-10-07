@@ -5,6 +5,7 @@ const database = require('../services/database-services');
 const fs = require('fs');
 const path = require('path');
 const { channel } = require('diagnostics_channel');
+const { UploadTiktok } = require('../services/tiktok-services');
 const PROJECT_ROOT = path.resolve(__dirname, '../../');
 const UploadReelsVideos = async (req, res) => {
   try {
@@ -39,10 +40,19 @@ const UploadReelsVideos = async (req, res) => {
       console.log('upload-videos@UploadReelsVideos', 'Failed to get the facebook object', null, 'info', { videoMetaData });
       return false;
     }
+
+    const tiktokRecord = await database.getTiktokInfo({ id: channelObject?.tiktok_uid });
+    if (!tiktokRecord) {
+      logger.log('upload-videos@UploadReelsVideos', 'Failed to get the tiktok object', null, 'info', { videoMetaData });
+      console.log('upload-videos@UploadReelsVideos', 'Failed to get the tiktok object', null, 'info', { videoMetaData });
+      return false;
+    }
+
     logger.log('upload-videos@UploadReelsVideos', 'Upload process begins', null, 'info', { videoMetaData });
     console.log('upload-videos@UploadReelsVideos', 'Upload process begins', null, 'info', { videoMetaData });
     // await Promise.all([UploadYoutube(videoMetaData, videoFileToUploadFilePath, youtubeRecord, 'SHORTS')]);
-    await Promise.all([UploadFacebook(videoMetaData, videoFileToUploadFilePath, facebookRecord, 'REELS')]);
+    // await Promise.all([UploadFacebook(videoMetaData, videoFileToUploadFilePath, facebookRecord, 'REELS')]);
+    await Promise.all([UploadTiktok(videoMetaData, videoFileToUploadFilePath, tiktokRecord)]);
 
     // Move file from videos_to_upload to finished_upload
     // api call to python to remove all the associated files through filename

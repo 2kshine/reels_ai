@@ -1,4 +1,4 @@
-const { Channels, Youtube, Facebook } = require('../../models');
+const { Channels, Youtube, Facebook, Tiktok } = require('../../models');
 
 const getChannelInfo = async (payload) => {
   return await Channels.findOne({ where: payload });
@@ -36,4 +36,16 @@ const updateFacebookInfo = async (facebook, payload) => {
   return await facebook.update(payload);
 };
 
-module.exports = { getChannelInfo, getYoutubeInfo, createChannelInfo, createYoutubeInfo, updateYoutubeInfo, getFacebookInfo, createFacebookInfo, updateFacebookInfo, updateChannelInfo };
+const getTiktokInfo = async (payload) => {
+  return await Tiktok.findOne({ where: payload });
+};
+
+const createTiktokInfo = async (payload) => {
+  return await Tiktok.create(payload);
+};
+
+const updateTiktokInfo = async (tiktok, payload) => {
+  return await tiktok.update(payload);
+};
+
+module.exports = { getTiktokInfo, createTiktokInfo, updateTiktokInfo, getChannelInfo, getYoutubeInfo, createChannelInfo, createYoutubeInfo, updateYoutubeInfo, getFacebookInfo, createFacebookInfo, updateFacebookInfo, updateChannelInfo };
