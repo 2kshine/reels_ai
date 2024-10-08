@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const logger = require('../../config/cloudwatch-logs');
-const { QA_REELS_DIR, FILES_CLEANUP_DIR, ASSET_PREPARATION_DIR } = require('../services/directory.services');
+const { QA_REELS_DIR, FILES_CLEANUP_DIR, ASSET_PREPARATION_DIR } = require('../services/directory-services');
 
 const getAllVideos = async (req, res) => {
   const { limit, offset } = req.body;

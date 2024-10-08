@@ -1,4 +1,4 @@
-const { } = require('../controllers/action-controller');
+const { GenerateScript } = require('../controllers/action-controller');
 const logger = require('../../config/cloudwatch-logs');
 const { default: axios } = require('axios');
 
@@ -19,10 +19,10 @@ const IdentifyIntent = async (payload) => {
 
     // Once the Transcription is complete.
     if (action_type === 'LINK_TO_REELS') {
-      // Send to queue
-    //   if (!await IdentifyIntent({ filename, action_type, channel })) {
-    //     return false;
-    //   }
+    //   Send to queue
+      if (!await GenerateScript({ filename, action_type, channel })) {
+        return false;
+      }
     }
     return true;
   } catch (err) {

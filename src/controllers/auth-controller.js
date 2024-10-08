@@ -1,4 +1,3 @@
-const { google } = require('googleapis');
 const database = require('../services/database-services');
 const axios = require('axios');
 const { oauth2Client } = require('../services/youtube-services');

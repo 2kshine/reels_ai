@@ -8,6 +8,7 @@ const routes = require('./src/routes/index.js');
 const testController = require('./src/controllers/action-controller.js');
 // const { sixDigitCodeRedis } = require('./src/services/redis-connect.js');
 const { UploadReelsVideos } = require('./src/controllers/upload-videos.js');
+const { GenerateScript } = require('./src/workers/generate-script.js');
 // Cors Middleware
 const corsOptions = {
   origin: process.env.UX_URL,
@@ -42,6 +43,7 @@ app.listen(PORT, async () => {
   // console.log(something);
   // return;
   // UploadReelsVideos();
+  GenerateScript({ filename: 'testsample', action_type: 'LINK_TO_REELS', channel: { id: 'a317e87a-b51b-444b-be0a-7cbeffd46669', niche: 'Finance' } });
   console.log(`Listening at PORT ${PORT}`);
   console.log('##############################$$$$$################');
   // testController.ProcessRawAudioJson();
